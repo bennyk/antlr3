@@ -284,7 +284,7 @@ headerFile( LEXER,
 /* =============================================================================
  * Standard antlr3 C++ runtime definitions
  */
-#include \<antlr3.hpp>
+#include "antlr3.hpp"
 
 /* End of standard antlr 3 runtime definitions
  * =============================================================================
@@ -1007,7 +1007,7 @@ parser(	grammar,
 		bitsets,
 		ASTLabelType,
 		superClass="Parser",
-		labelType="ImplTraits::CommonTokenType*",
+		labelType="const ImplTraits::CommonTokenType*",
 		members={<actions.parser.members>}
 		) ::= <<
 <beginNamespace(actions)>
