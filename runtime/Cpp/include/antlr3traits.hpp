@@ -196,6 +196,9 @@ public:
 									CommonTokenStream<TraitsType> >::selected TokenStreamType;
 	typedef typename TraitsSelector< typename UserTraits<TraitsType>::TreeNodeStreamType, 
 		                            CommonTreeNodeStream<TraitsType> >::selected TreeNodeStreamType;
+    
+    // TODO: HACK!!! to try out CommonTreeNodeStream
+    typedef IntStream<TraitsType, BaseTraitsType> TreeNodeIntStreamType;
 	
 	typedef typename TraitsSelector< typename UserTraits<TraitsType>::DebugEventListenerType, 
 		                            DebugEventListener<TraitsType> >::selected DebugEventListenerType;

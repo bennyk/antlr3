@@ -77,14 +77,14 @@ typename CommonTreeAdaptor<ImplTraits>::TreeType*		CommonTreeAdaptor<ImplTraits>
 }
 
 template<class ImplTraits>
-typename CommonTreeAdaptor<ImplTraits>::TreeType*		CommonTreeAdaptor<ImplTraits>::errorNode( CommonTokenType* tnstream, CommonTokenType* startToken, CommonTokenType* stopToken)
+typename CommonTreeAdaptor<ImplTraits>::TreeType*		CommonTreeAdaptor<ImplTraits>::errorNode( TokenStreamType* tnstream, const CommonTokenType* startToken, const CommonTokenType* stopToken)
 {
 	// Use the supplied common tree node stream to get another tree from the factory
 	// TODO: Look at creating the erronode as in Java, but this is complicated by the
 	// need to track and free the memory allocated to it, so for now, we just
 	// want something in the tree that isn't a NULL pointer.
 	//
-	return this->createTypeText( CommonTokenType::TOKEN_INVALID, "Tree Error Node");
+	return this->createTypeText( CommonTokenType::TOKEN_INVALID, (ANTLR_UINT8*)"Tree Error Node");
 
 }
 
@@ -172,7 +172,7 @@ typename CommonTreeAdaptor<ImplTraits>::TreeType*	CommonTreeAdaptor<ImplTraits>:
 }
 
 template<class ImplTraits>
-typename CommonTreeAdaptor<ImplTraits>::TreeType*	 	CommonTreeAdaptor<ImplTraits>::create( CommonTokenType* payload)
+typename CommonTreeAdaptor<ImplTraits>::TreeType*	 	CommonTreeAdaptor<ImplTraits>::create( const CommonTokenType* payload)
 {
 	return new TreeType(payload);
 }
@@ -298,7 +298,7 @@ typename CommonTreeAdaptor<ImplTraits>::CommonTokenType*
     if	(newToken != NULL)
     {	
 		newToken->set_tokText( (const char*) text );
-		newToken->setType(tokenType);
+		newToken->set_type(tokenType);
     }
     return  newToken;
 
@@ -337,7 +337,7 @@ typename CommonTreeAdaptor<ImplTraits>::CommonTokenType*
 }
 
 template<class ImplTraits>
-void CommonTreeAdaptor<ImplTraits>::setTokenBoundaries( TreeType* t, CommonTokenType* startToken, CommonTokenType* stopToken)
+void CommonTreeAdaptor<ImplTraits>::setTokenBoundaries( TreeType* t, const CommonTokenType* startToken, const CommonTokenType* stopToken)
 {
 	ANTLR_MARKER   start;
 	ANTLR_MARKER   stop;
@@ -351,7 +351,7 @@ void CommonTreeAdaptor<ImplTraits>::setTokenBoundaries( TreeType* t, CommonToken
 
 	if	( startToken != NULL)
 	{
-		start = startToken->getTokenIndex();
+		start = startToken->get_tokenIndex();
 	}
 	else
 	{
@@ -360,7 +360,7 @@ void CommonTreeAdaptor<ImplTraits>::setTokenBoundaries( TreeType* t, CommonToken
 
 	if	( stopToken != NULL)
 	{
-		stop = stopToken->getTokenIndex();
+		stop = stopToken->get_tokenIndex();
 	}
 	else
 	{
@@ -658,8 +658,8 @@ typename CommonTreeAdaptor<ImplTraits>::TreeType* CommonTreeAdaptor<ImplTraits>:
 		else if	(root->getChildCount() == 1)
 		{
 			root = root->getChild(0);
-			root->setParent(NULL);
-			root->setChildIndex(-1);
+			root->set_parent(NULL);
+			root->set_childIndex(-1);
 
             // The root we were given was a nil node, wiht one child, which means it has
             // been abandoned and would be lost in the node factory. However

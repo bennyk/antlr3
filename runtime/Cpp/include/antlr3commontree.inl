@@ -24,7 +24,7 @@ CommonTree<ImplTraits>::CommonTree( const CommonTree& ctree )
 }
 
 template<class ImplTraits>
-CommonTree<ImplTraits>::CommonTree( CommonTokenType* token )
+CommonTree<ImplTraits>::CommonTree( const CommonTokenType* token )
 {
 	m_savedIndex = 0;
 	m_startIndex = 0;
@@ -38,15 +38,15 @@ template<class ImplTraits>
 CommonTree<ImplTraits>::CommonTree( CommonTree* tree )
 {
 	m_savedIndex = 0;
-	m_startIndex = 0;
-	m_stopIndex  = 0;
+	m_startIndex = tree->get_startIndex();
+	m_stopIndex  = tree->get_stopIndex();
 	m_token		 = tree->get_token();
 	m_parent     = NULL;
 	m_childIndex = 0;
 }
 
 template<class ImplTraits>
-typename CommonTree<ImplTraits>::TokenType*   CommonTree<ImplTraits>::get_token() const
+const typename CommonTree<ImplTraits>::CommonTokenType*   CommonTree<ImplTraits>::get_token() const
 {
 	return m_token;
 }
@@ -321,7 +321,7 @@ typename CommonTree<ImplTraits>::TreeType*	CommonTree<ImplTraits>::dupTree()
 template<class ImplTraits>
 ANTLR_UINT32	CommonTree<ImplTraits>::getCharPositionInLine()
 {
-	CommonTokenType*    token;
+	const CommonTokenType*    token;
 	token   = m_token;
 
 	if	(token == NULL || (token->getCharPositionInLine() == -1) )
@@ -362,6 +362,31 @@ ANTLR_INT32	CommonTree<ImplTraits>::get_childIndex() const
 {
 	return m_childIndex;
 }
+
+template<class ImplTraits>
+void    CommonTree<ImplTraits>::set_startIndex(ANTLR_MARKER startIndex)
+{
+    m_startIndex = startIndex;
+}
+
+template<class ImplTraits>
+void    CommonTree<ImplTraits>::set_stopIndex(ANTLR_MARKER stopIndex)
+{
+    m_stopIndex = stopIndex;
+}
+
+template<class ImplTraits>
+ANTLR_MARKER    CommonTree<ImplTraits>::get_startIndex()
+{
+    return m_startIndex;
+}
+
+template<class ImplTraits>
+ANTLR_MARKER    CommonTree<ImplTraits>::get_stopIndex()
+{
+    return m_stopIndex;
+}
+
 
 template<class ImplTraits>
 ANTLR_UINT32	CommonTree<ImplTraits>::getChildCount() const
@@ -420,10 +445,10 @@ template<class ImplTraits>
 ANTLR_UINT32	CommonTree<ImplTraits>::getLine()
 {
 	TreeType*	    cTree = this;
-	CommonTokenType* token;
+	const CommonTokenType* token;
 	token   = cTree->get_token();
 
-	if	(token == NULL || token->getLine() == 0)
+	if	(token == NULL || token->get_line() == 0)
 	{
 		if  ( this->getChildCount() > 0)
 		{
@@ -433,7 +458,7 @@ ANTLR_UINT32	CommonTree<ImplTraits>::getLine()
 		}
 		return 0;
 	}
-	return  token->getLine();
+	return  token->get_line();
 }
 
 template<class ImplTraits>
@@ -486,7 +511,7 @@ typename CommonTree<ImplTraits>::StringType	CommonTree<ImplTraits>::toStringTree
 		string.append(this->toString());
 		string.append(" ");
 	}
-	if	( m_children != NULL)
+	if	( m_children.size() > 0)
 	{
 		n = m_children.size();
 
@@ -546,8 +571,8 @@ void	CommonTree<ImplTraits>::freshenPACIndexes(ANTLR_UINT32 offset)
 
 		child = this->getChild(c);
 
-		child->setChildIndex(c);
-		child->setParent(this);
+		child->set_childIndex(c);
+		child->set_parent(this);
 	}
 }
 

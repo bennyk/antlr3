@@ -70,7 +70,7 @@ private:
 
     /// A single token, this is the payload for the tree
     ///
-    CommonTokenType*    m_token;
+    const CommonTokenType     *m_token;
 
 	/// Points to the node that has this node as a child.
 	/// If this is NULL, then this is the root node.
@@ -84,11 +84,11 @@ private:
 
 public:
 	CommonTree();
-	CommonTree( CommonTokenType* token );
+	CommonTree( const CommonTokenType* token );
 	CommonTree( CommonTree* token );
 	CommonTree( const CommonTree& ctree );
 
-	TokenType*   get_token() const;
+	const CommonTokenType*  get_token() const;
 	ChildrenType& get_children();
 	const ChildrenType& get_children() const;
 	ChildrenType* get_children_p();
@@ -97,6 +97,11 @@ public:
 
 	void    set_parent( TreeType* parent);
 	void    set_childIndex( ANTLR_INT32 );
+    
+    void    set_startIndex(ANTLR_MARKER startIndex);
+    void    set_stopIndex(ANTLR_MARKER stopIndex);
+    ANTLR_MARKER get_startIndex();
+    ANTLR_MARKER get_stopIndex();
 
 	void	addChild(TreeType* child);
 	/// Add all elements of the supplied list as children of this node

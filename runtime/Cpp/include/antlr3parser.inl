@@ -503,6 +503,7 @@ ANTLR_INLINE RuleReturnValue<ImplTraits>::RuleReturnValue(BaseParserType* psr)
 	parser = psr; 
 	start = NULL;
 	stop = NULL;
+    tree = nullptr;
 }
 
 template< class ImplTraits>
@@ -511,6 +512,7 @@ ANTLR_INLINE RuleReturnValue<ImplTraits>::RuleReturnValue( const RuleReturnValue
 	parser	= val.parser; 
 	start	= val.start;
 	stop	= val.stop;
+    tree    = val.tree;
 }
 
 template< class ImplTraits>
@@ -519,6 +521,7 @@ ANTLR_INLINE RuleReturnValue<ImplTraits>& RuleReturnValue<ImplTraits>::operator=
 	parser	= val.parser; 
 	start	= val.start;
 	stop	= val.stop;
+    tree    = val.tree;
 	return *this;
 }
 

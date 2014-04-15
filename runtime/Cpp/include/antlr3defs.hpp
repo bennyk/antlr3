@@ -102,7 +102,7 @@
 
 /* Common definitions come first
  */
-#include    <antlr3errors.hpp>
+#include    "antlr3errors.hpp"
 
 /* Work out what operating system/compiler this is. We just do this once
  * here and use an internal symbol after this.
@@ -301,11 +301,11 @@ typedef ANTLR_UINT32		ANTLR_INTKEY;
  * they can be inter-dependant and we will let the linker
  * sort it out for us.
  */
-#include    <antlr3interfaces.hpp>
+#include    "antlr3interfaces.hpp"
 
 // Include the unicode.org conversion library header.
 //
-#include    <antlr3convertutf.hpp>
+#include    "antlr3convertutf.hpp"
 
 enum ChannelType
 {

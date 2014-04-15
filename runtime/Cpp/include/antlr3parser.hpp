@@ -161,10 +161,12 @@ class RuleReturnValue
 public:
 	typedef typename ImplTraits::BaseParserType BaseParserType;
 	typedef typename ImplTraits::CommonTokenType CommonTokenType;
+    typedef typename ImplTraits::TreeType TreeType;
 	
 public:
 	const CommonTokenType*		start;
 	const CommonTokenType*		stop;
+    TreeType*                   tree;
 	BaseParserType*			parser;
 
 	RuleReturnValue(BaseParserType* psr = NULL );

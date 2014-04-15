@@ -12,6 +12,7 @@ CommonToken<ImplTraits>::CommonToken()
 	m_index = 0;
 	m_startIndex = 0;
 	m_stopIndex = 0;
+    m_tokText = "";
 }
 
 template<class ImplTraits>
@@ -26,6 +27,7 @@ CommonToken<ImplTraits>::CommonToken(ANTLR_UINT32 type)
 	m_index = 0;
 	m_startIndex = 0;
 	m_stopIndex = 0;
+    m_tokText = "";
 }
 
 template<class ImplTraits>
@@ -40,6 +42,7 @@ CommonToken<ImplTraits>::CommonToken(TOKEN_TYPE type)
 	m_index = 0;
 	m_startIndex = 0;
 	m_stopIndex = 0;
+    m_tokText = "";
 }
 
 template<class ImplTraits>
@@ -55,6 +58,7 @@ CommonToken<ImplTraits>::CommonToken( const CommonToken& ctoken )
 	m_index = ctoken.m_index;
 	m_startIndex = ctoken.m_startIndex;
 	m_stopIndex = ctoken.m_stopIndex;
+    m_tokText = "";
 }
 
 template<class ImplTraits>
@@ -275,6 +279,18 @@ ANTLR_INLINE void	CommonToken<ImplTraits>::set_lineStart( const StreamDataType* 
 	m_lineStart = lineStart;
 }
 
+// function to replace all string occurences. This could have been in STL library.
+// http://minhazulhaque.blogspot.com/2012/09/find-and-replace-all-occurrences-in-cpp-string.html.html
+template<class T>
+void replace_all(T& source, const std::string find, const std::string replace)
+{
+    for(std::string::size_type i = 0; (i = source.find(find, i)) != std::string::npos;)
+    {
+        source.replace(i, find.length(), replace);
+        i += replace.length() - find.length() + 1;
+    }
+}
+
 template<class ImplTraits>
 typename CommonToken<ImplTraits>::StringType  CommonToken<ImplTraits>::toString() const
 {
@@ -284,8 +300,14 @@ typename CommonToken<ImplTraits>::StringType  CommonToken<ImplTraits>::toString(
 
     text    =	this->getText();
 
-    if	(text.empty())
-		return "";
+    if	(text.empty()) {
+        text = "";
+    }
+    else {
+        replace_all(text, "\n", "\\n");
+        replace_all(text, "\r", "\\r");
+        replace_all(text, "\t", "\\t");
+    }
 
     /* Now we use our handy dandy string utility to assemble the
      * the reporting string

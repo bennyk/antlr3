@@ -46,7 +46,8 @@ public:
 	typedef	TreeType TokenType;
 	typedef typename ImplTraits::CommonTokenType CommonTokenType;
 	typedef typename ImplTraits::DebugEventListenerType DebuggerType;
-
+    typedef typename ImplTraits::TokenStreamType TokenStreamType;
+    
 public:
 	//The parameter is there only to provide uniform constructor interface
 	CommonTreeAdaptor(DebuggerType* dbg = NULL);
@@ -59,7 +60,7 @@ public:
     void	setParent( TreeType* child, TreeType* parent);
     TreeType*		getParent( TreeType* child);
 
-	TreeType*		errorNode( CommonTokenType* tnstream, CommonTokenType* startToken, CommonTokenType* stopToken);
+	TreeType*		errorNode( TokenStreamType* tnstream, const CommonTokenType* startToken, const CommonTokenType* stopToken);
 	bool	isNilNode( TreeType* t);
 
     TreeType*	    becomeRoot( TreeType* newRoot, TreeType* oldRoot);
@@ -67,7 +68,7 @@ public:
 
     TreeType*	becomeRootToken(CommonTokenType* newRoot, TreeType* oldRoot);
 
-    TreeType*	 	create( CommonTokenType* payload);
+    TreeType*	 	create( const CommonTokenType* payload);
     TreeType* 		createTypeToken( ANTLR_UINT32 tokenType, CommonTokenType* fromToken);
     TreeType*	   	createTypeTokenText	( ANTLR_UINT32 tokenType, CommonTokenType* fromToken, const ANTLR_UINT8* text);
     TreeType*	    createTypeText		( ANTLR_UINT32 tokenType, const ANTLR_UINT8* text);
@@ -89,7 +90,7 @@ public:
     CommonTokenType*    createTokenFromToken( CommonTokenType* fromToken);
     CommonTokenType*    getToken( TreeType* t);
 
-    void setTokenBoundaries( TreeType* t, CommonTokenType* startToken, CommonTokenType* stopToken);
+    void setTokenBoundaries( TreeType* t, const CommonTokenType* startToken, const CommonTokenType* stopToken);
     ANTLR_MARKER	getTokenStartIndex( TreeType* t);
     ANTLR_MARKER	getTokenStopIndex( TreeType* t);
 
