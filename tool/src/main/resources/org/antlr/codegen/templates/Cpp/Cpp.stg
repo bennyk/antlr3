@@ -1180,6 +1180,7 @@ rule(ruleName,ruleDescriptor,block,emptyRule,description,exceptions,finally,memo
         {
             this->preporterror();
             this->precover();
+            _adaptor.errorNode(this->get_input(), retval.start, this->LT(-1));
             <@setErrorReturnValue()>
         }
         <if(ruleDescriptor.actions.after)>
