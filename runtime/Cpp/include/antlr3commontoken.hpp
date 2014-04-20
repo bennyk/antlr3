@@ -168,7 +168,7 @@ public:
      *  tokens will implement this function with a function that errors out (probably
      *  drastically.
      */
-    void	setText(ANTLR_UINT8* text);
+    void	setText(const ANTLR_UINT8* text);
 	void	setText(const char* text);
 
     /** Pointer to a function that returns the token type of this token

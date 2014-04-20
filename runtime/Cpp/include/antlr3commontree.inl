@@ -2,53 +2,75 @@ ANTLR_BEGIN_NAMESPACE()
 
 template<class ImplTraits>
 CommonTree<ImplTraits>::CommonTree()
+:m_token {}
 {
 	m_savedIndex = 0;
 	m_startIndex = 0;
 	m_stopIndex  = 0;
-	m_token		 = NULL;
 	m_parent     = NULL;
 	m_childIndex = 0;
 }
 
 template<class ImplTraits>
 CommonTree<ImplTraits>::CommonTree( const CommonTree& ctree )
-	:m_children( ctree.m_children)
+:m_children {ctree.m_children}, m_token {ctree.m_token}
 {
 	m_savedIndex = ctree.m_savedIndex;
 	m_startIndex = ctree.m_startIndex;
 	m_stopIndex  = ctree.m_stopIndex;
-	m_token		 = ctree.m_token;
 	m_parent     = ctree.m_parent;
 	m_childIndex = ctree.m_childIndex;
 }
 
 template<class ImplTraits>
-CommonTree<ImplTraits>::CommonTree( const CommonTokenType* token )
+CommonTree<ImplTraits>::CommonTree( const CommonTokenType *token )
 {
 	m_savedIndex = 0;
 	m_startIndex = 0;
 	m_stopIndex  = 0;
-	m_token		 = token;
+    
+    // token is nullable
+    if (token != nullptr)
+        m_token.reset(new CommonTokenType(*token));
+    
 	m_parent     = NULL;
 	m_childIndex = 0;
 }
 
 template<class ImplTraits>
+CommonTree<ImplTraits>::CommonTree( ANTLR_UINT32 tokenType )
+{
+	m_savedIndex = 0;
+	m_startIndex = 0;
+	m_stopIndex  = 0;
+	m_token.reset(new CommonTokenType(tokenType));
+	m_parent     = NULL;
+	m_childIndex = 0;
+}
+
+
+template<class ImplTraits>
 CommonTree<ImplTraits>::CommonTree( CommonTree* tree )
+:m_token {tree->get_token()}
 {
 	m_savedIndex = 0;
 	m_startIndex = tree->get_startIndex();
 	m_stopIndex  = tree->get_stopIndex();
-	m_token		 = tree->get_token();
 	m_parent     = NULL;
 	m_childIndex = 0;
+}
+
+template<class ImplTraits>
+void CommonTree<ImplTraits>::set_token(const CommonTokenType * token )
+{
+    assert( token != nullptr );
+	return m_token.reset(new CommonTokenType(token));
 }
 
 template<class ImplTraits>
 const typename CommonTree<ImplTraits>::CommonTokenType*   CommonTree<ImplTraits>::get_token() const
 {
-	return m_token;
+	return m_token.get();
 }
 
 template<class ImplTraits>
@@ -321,10 +343,7 @@ typename CommonTree<ImplTraits>::TreeType*	CommonTree<ImplTraits>::dupTree()
 template<class ImplTraits>
 ANTLR_UINT32	CommonTree<ImplTraits>::getCharPositionInLine()
 {
-	const CommonTokenType*    token;
-	token   = m_token;
-
-	if	(token == NULL || (token->getCharPositionInLine() == -1) )
+	if	(m_token.get() == nullptr || (m_token->getCharPositionInLine() == -1) )
 	{
 		if  (this->getChildCount() > 0)
 		{
@@ -336,7 +355,7 @@ ANTLR_UINT32	CommonTree<ImplTraits>::getCharPositionInLine()
 		}
 		return 0;
 	}
-	return  token->getCharPositionInLine();
+	return  m_token->getCharPositionInLine();
 }
 
 template<class ImplTraits>
@@ -401,7 +420,7 @@ typename CommonTree<ImplTraits>::TreeType* CommonTree<ImplTraits>::get_parent() 
 }
 
 template<class ImplTraits>
-void     CommonTree<ImplTraits>::set_parent( TreeType* parent)
+void     CommonTree<ImplTraits>::set_parent( BaseType* parent)
 {
 	m_parent = parent;
 }
@@ -444,7 +463,7 @@ typename CommonTree<ImplTraits>::TreeType*	CommonTree<ImplTraits>::getFirstChild
 template<class ImplTraits>
 ANTLR_UINT32	CommonTree<ImplTraits>::getLine()
 {
-	TreeType*	    cTree = this;
+	BaseType*	    cTree = this;
 	const CommonTokenType* token;
 	token   = cTree->get_token();
 
@@ -472,7 +491,7 @@ bool	CommonTree<ImplTraits>::isNilNode()
 {
 	// This is a Nil tree if it has no payload (Token in our case)
 	//
-	if(m_token == NULL)
+	if(m_token.get() == nullptr)
 	{
 		return true;
 	}

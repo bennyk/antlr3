@@ -35,7 +35,26 @@
 
 #include    "antlr3defs.hpp"
 
+#include <memory>
+
 ANTLR_BEGIN_NAMESPACE()
+
+template<class ImplTraits>
+class CommonTreeStore : public ImplTraits::AllocPolicyType
+{
+public:
+    typedef typename ImplTraits::TreeType TreeType;
+    typedef typename ImplTraits::CommonTokenType CommonTokenType;
+
+public:
+    TreeType* create( const CommonTokenType* payload);
+    TreeType* create( ANTLR_UINT32 tokenType );
+    std::size_t size() const;
+
+private:
+    std::vector<std::unique_ptr<TreeType>> _treeStore;
+};
+
 
 template<class ImplTraits>
 class CommonTreeAdaptor : public ImplTraits::AllocPolicyType
@@ -47,10 +66,18 @@ public:
 	typedef typename ImplTraits::CommonTokenType CommonTokenType;
 	typedef typename ImplTraits::DebugEventListenerType DebuggerType;
     typedef typename ImplTraits::TokenStreamType TokenStreamType;
+    typedef typename ImplTraits::TreeStoreType TreeStoreType;
+
+private:
+    // pointer to current tree storage
+    TreeStoreType *_currentTreeStore;
+    
+    // default storage when external store is not given to the adaptor
+    std::unique_ptr<TreeStoreType> _internalTreeStore;
     
 public:
 	//The parameter is there only to provide uniform constructor interface
-	CommonTreeAdaptor(DebuggerType* dbg = NULL);
+	CommonTreeAdaptor(TreeStoreType *treeStore = nullptr, DebuggerType* dbg = nullptr);
     TreeType*	  nilNode();
 	TreeType*	  dupTree( TreeType* tree);
     TreeType*	  dupTreeTT( TreeType* t, TreeType* tree);
@@ -69,6 +96,7 @@ public:
     TreeType*	becomeRootToken(CommonTokenType* newRoot, TreeType* oldRoot);
 
     TreeType*	 	create( const CommonTokenType* payload);
+    TreeType* 		createTypeToken( ANTLR_UINT32 tokenType );
     TreeType* 		createTypeToken( ANTLR_UINT32 tokenType, CommonTokenType* fromToken);
     TreeType*	   	createTypeTokenText	( ANTLR_UINT32 tokenType, CommonTokenType* fromToken, const ANTLR_UINT8* text);
     TreeType*	    createTypeText		( ANTLR_UINT32 tokenType, const ANTLR_UINT8* text);
@@ -86,8 +114,8 @@ public:
     ANTLR_UINT32	getChildCount( TreeType*);
 	ANTLR_UINT64	getUniqueID( TreeType*);
 
-    CommonTokenType*    createToken( ANTLR_UINT32 tokenType, const ANTLR_UINT8* text);
-    CommonTokenType*    createTokenFromToken( CommonTokenType* fromToken);
+    std::unique_ptr<CommonTokenType> createToken( ANTLR_UINT32 tokenType, const ANTLR_UINT8* text);
+    std::unique_ptr<CommonTokenType> createTokenFromToken( CommonTokenType* fromToken);
     CommonTokenType*    getToken( TreeType* t);
 
     void setTokenBoundaries( TreeType* t, const CommonTokenType* startToken, const CommonTokenType* stopToken);

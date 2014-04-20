@@ -47,7 +47,7 @@ CommonToken<ImplTraits>::CommonToken(TOKEN_TYPE type)
 
 template<class ImplTraits>
 CommonToken<ImplTraits>::CommonToken( const CommonToken& ctoken )
-	:m_tokText( ctoken.m_tokText )
+	:m_tokText( ctoken.getText() )
 {
 	m_type = ctoken.m_type;
 	m_channel = ctoken.m_channel;
@@ -58,7 +58,6 @@ CommonToken<ImplTraits>::CommonToken( const CommonToken& ctoken )
 	m_index = ctoken.m_index;
 	m_startIndex = ctoken.m_startIndex;
 	m_stopIndex = ctoken.m_stopIndex;
-    m_tokText = "";
 }
 
 template<class ImplTraits>
@@ -74,7 +73,7 @@ CommonToken<ImplTraits>& CommonToken<ImplTraits>::operator=( const CommonToken& 
 	m_startIndex = ctoken.m_startIndex;
 	m_stopIndex = ctoken.m_stopIndex;
 
-	m_tokText = ctoken.m_tokText;
+	m_tokText = ctoken.getText();
 	return *this;
 }
 
@@ -154,7 +153,7 @@ ANTLR_INLINE void CommonToken<ImplTraits>::set_tokText( const StringType& text )
 }
 
 template<class ImplTraits>
-ANTLR_INLINE void CommonToken<ImplTraits>::setText(ANTLR_UINT8* text)
+ANTLR_INLINE void CommonToken<ImplTraits>::setText(const ANTLR_UINT8* text)
 {
 	if( text == NULL )
 		m_tokText.clear();

@@ -28,17 +28,26 @@
 
 finishedBacktracking(block) ::= <<
 <if(backtracking)>
-if <actions.(actionScope).synpredgate>:
+if (<actions.(actionScope).synpredgate>) {
     <block>
+}
 <else>
 <block>
 <endif>
 >>
 
+@headerFile.typedefs() ::= <<
+
+
+// AST typedefs
+typedef antlr3::CommonTreeAdaptor\<ImplTraits> TreeAdaptor;
+typedef TreeAdaptor::TreeStoreType TreeStoreType;
+>>
+
 @headerFile.members() ::= <<
 
-	// AST members start here
-	antlr3::CommonTreeAdaptor\<ImplTraits> _adaptor;
+    // AST members
+    TreeAdaptor _adaptor;
 
 >>
 
@@ -112,7 +121,10 @@ ruleLabelDefs() ::= <<
 <if(autoAST)>
 <if(outerAlt)>
 <if(!rewriteMode)>
-root_0 = _adaptor.nilNode();
+
+<if(!ruleDescriptor.isSynPred)>
+root_0 = _adaptor.createTypeToken(<ruleDescriptor.name>_rule);
+<endif>
 
 <endif>
 <endif>

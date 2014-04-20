@@ -1,8 +1,41 @@
 ANTLR_BEGIN_NAMESPACE()
 
 template<class ImplTraits>
-ANTLR_INLINE CommonTreeAdaptor<ImplTraits>::CommonTreeAdaptor(DebuggerType*)
+typename CommonTreeStore<ImplTraits>::TreeType*
+CommonTreeStore<ImplTraits>::create(const CommonTokenType* payload)
 {
+    TreeType *result = new TreeType(payload);
+    _treeStore.push_back(std::unique_ptr<TreeType> {result});
+    return result;
+}
+
+template<class ImplTraits>
+typename CommonTreeStore<ImplTraits>::TreeType*
+CommonTreeStore<ImplTraits>::create(ANTLR_UINT32 tokenType)
+{
+    TreeType *result = new TreeType(tokenType);
+    _treeStore.push_back(std::unique_ptr<TreeType> {result});
+    return result;
+}
+
+template<class ImplTraits>
+std::size_t CommonTreeStore<ImplTraits>::size() const
+{
+    return _treeStore.size();
+}
+
+template<class ImplTraits>
+CommonTreeAdaptor<ImplTraits>::CommonTreeAdaptor(TreeStoreType* treeStore, DebuggerType*)
+{
+    if (treeStore == nullptr) {
+        // create internal storage when external store is not defined
+        _internalTreeStore.reset(new TreeStoreType());
+        _currentTreeStore = _internalTreeStore.get();
+    }
+    else {
+        // otherwise left the _internalTreeStore in nullptr and update the current tree store pointer
+        _currentTreeStore = treeStore;
+    }
 }
 
 template<class ImplTraits>
@@ -174,7 +207,12 @@ typename CommonTreeAdaptor<ImplTraits>::TreeType*	CommonTreeAdaptor<ImplTraits>:
 template<class ImplTraits>
 typename CommonTreeAdaptor<ImplTraits>::TreeType*	 	CommonTreeAdaptor<ImplTraits>::create( const CommonTokenType* payload)
 {
-	return new TreeType(payload);
+    return _currentTreeStore->create(payload);
+}
+template<class ImplTraits>
+typename CommonTreeAdaptor<ImplTraits>::TreeType*  CommonTreeAdaptor<ImplTraits>::createTypeToken( ANTLR_UINT32 tokenType )
+{
+    return _currentTreeStore->create(tokenType);
 }
 
 template<class ImplTraits>
@@ -200,33 +238,31 @@ typename CommonTreeAdaptor<ImplTraits>::TreeType*	CommonTreeAdaptor<ImplTraits>:
 {
 	/* Create the new token
 	 */
-	fromToken = this->createTokenFromToken(fromToken);
+	auto token = this->createTokenFromToken(fromToken);
 
 	/* Set the type of the new token to that supplied
 	 */
-	fromToken->setType(tokenType);
+	token->set_type(tokenType);
 
 	/* Set the text of the token accordingly
 	 */
-	fromToken->setText(text);
+	token->setText(text);
 
 	/* Return a new node based upon this token
 	 */
-	return	this->create(fromToken);
+	return	this->create(token.get());
 }
 
 template<class ImplTraits>
 typename CommonTreeAdaptor<ImplTraits>::TreeType*	    CommonTreeAdaptor<ImplTraits>::createTypeText( ANTLR_UINT32 tokenType, const ANTLR_UINT8* text)
 {
-	CommonTokenType*	fromToken;
-
 	/* Create the new token
 	 */
-	fromToken = this->createToken(tokenType, text);
+	auto fromToken = createToken(tokenType, text);
 
 	/* Return a new node based upon this token
 	 */
-	return	this->create(fromToken);
+	return	this->create(fromToken.get());
 }
 
 template<class ImplTraits>
@@ -290,12 +326,13 @@ ANTLR_UINT64	CommonTreeAdaptor<ImplTraits>::getUniqueID( TreeType* node )
 }
 
 template<class ImplTraits>
-typename CommonTreeAdaptor<ImplTraits>::CommonTokenType*    
+//typename CommonTreeAdaptor<ImplTraits>::CommonTokenType*
+std::unique_ptr<typename CommonTreeAdaptor<ImplTraits>::CommonTokenType>
 	     CommonTreeAdaptor<ImplTraits>::createToken( ANTLR_UINT32 tokenType, const ANTLR_UINT8* text)
 {
-	CommonTokenType*    newToken = new CommonTokenType;
+    std::unique_ptr<CommonTokenType> newToken {new CommonTokenType};
 
-    if	(newToken != NULL)
+    if	(newToken.get() != nullptr)
     {	
 		newToken->set_tokText( (const char*) text );
 		newToken->set_type(tokenType);
@@ -305,25 +342,23 @@ typename CommonTreeAdaptor<ImplTraits>::CommonTokenType*
 }
 
 template<class ImplTraits>
-typename CommonTreeAdaptor<ImplTraits>::CommonTokenType*    
-	CommonTreeAdaptor<ImplTraits>::createTokenFromToken( CommonTokenType* fromToken)
+std::unique_ptr<typename CommonTreeAdaptor<ImplTraits>::CommonTokenType>
+        CommonTreeAdaptor<ImplTraits>::createTokenFromToken( CommonTokenType* fromToken)
 {
-	CommonTokenType*    newToken;
-
-    newToken	= new CommonTokenType;
+    std::unique_ptr<CommonTokenType> newToken {new CommonTokenType};
     
-    if	(newToken != NULL)
+    if	(newToken.get() != nullptr)
     {
 		// Create the text using our own string factory to avoid complicating
 		// commontoken.
 		//
 		StringType	text = fromToken->getText();
 		newToken->set_tokText( text );
-		newToken->setLine( fromToken->getLine() );
-		newToken->setTokenIndex( fromToken->getTokenIndex() );
-		newToken->setCharPositionInLine( fromToken->getCharPositionInLine() );
-		newToken->setChannel( fromToken->getChannel() );
-		newToken->setType( fromToken->getType() );
+		newToken->set_line( fromToken->get_line() );
+		newToken->set_tokenIndex( fromToken->get_tokenIndex() );
+		newToken->set_charPositionInLine( fromToken->getCharPositionInLine() );
+		newToken->set_channel( fromToken->get_channel() );
+		newToken->set_type( fromToken->getType() );
     }
 
     return  newToken;
@@ -686,7 +721,7 @@ void DebugTreeAdaptor<ImplTraits>::setDebugEventListener( DebuggerType* debugger
 template<class ImplTraits>
 typename DebugTreeAdaptor<ImplTraits>::TreeType*	  DebugTreeAdaptor<ImplTraits>::nilNode()
 {
-	TreeType*	t = this->create(NULL);
+	TreeType*	t = this->create(nullptr);
 	m_debugger->createNode(t);
 	return	t;
 }

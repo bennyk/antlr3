@@ -41,8 +41,9 @@
 finishedBacktracking(block) ::= <<
 <if(!ruleDescriptor.isSynPred)>
 <if(backtracking)>
-if <actions.(actionScope).synpredgate>:
+if (<actions.(actionScope).synpredgate>) {
     <block>
+}
 <else>
 <block>
 <endif>
@@ -61,7 +62,7 @@ retval.tree = _adaptor.errorNode(self.input, retval.start, self.input.LT(-1), re
 tokenRef(token,label,elementIndex,terminalOptions={}) ::= <<
 <super.tokenRef(...)>
 <finishedBacktracking({
-<label>_tree = <createNodeFromToken(...)>
+<label>_tree = <createNodeFromToken(...)>;
 _adaptor.addChild(root_0, <label>_tree);
 })>
 >>
@@ -73,7 +74,7 @@ tokenRefBang(token,label,elementIndex,terminalOptions={}) ::= "<super.tokenRef(.
 tokenRefRuleRoot(token,label,elementIndex,terminalOptions={}) ::= <<
 <super.tokenRef(...)>
 <finishedBacktracking({
-<label>_tree = <createNodeFromToken(...)>
+<label>_tree = <createNodeFromToken(...)>;
 root_0 = _adaptor.becomeRoot(<label>_tree, root_0);
 })>
 >>
@@ -188,7 +189,7 @@ createNodeFromToken(label,terminalOptions={}) ::= <%
 <if(terminalOptions.node)>
 <terminalOptions.node>(<label>) <! new MethodNode(IDLabel) !>
 <else>
-_adaptor.create(<label>);
+_adaptor.create(<label>)
 <endif>
 %>
 

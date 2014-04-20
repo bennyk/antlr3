@@ -357,6 +357,13 @@ public:
 	{
 		EOF_TOKEN = <name>ImplTraits::CommonTokenType::TOKEN_EOF
 		<tokens:{it | , <it.name> = <it.type> }; separator="\n">
+		
+<if(buildAST)>
+		// use to demarcate rule tokens from the rest 
+		, rule_token_start
+		<rules:{r | , <r.ruleDescriptor.name>_rule }; separator="\n">
+<endif>
+    , max_token_num
 	};
 
 };
@@ -372,6 +379,8 @@ public:
 	typedef <componentBaseType()> BaseType;
 	typedef ImplTraits::RecognizerSharedStateType\<StreamType> RecognizerSharedStateType;
 	typedef StreamType InputType;
+	<@typedefs()>
+	
 <if(recognizer.filterMode)>
 	static const bool IsFiltered = true;
 <else>
@@ -400,10 +409,17 @@ private:
     <@end>
 
 public:
+<if (buildAST)>
+    <name>(InputType* instream, TreeStoreType *treeStore = nullptr<recognizer.grammar.delegators:{g|, <g.recognizerName>* <g:delegateName()>}>);
+    <name>(InputType* instream, RecognizerSharedStateType* state<recognizer.grammar.delegators:{g|, <g.recognizerName>* <g:delegateName()>}>, TreeStoreType *treeStore = nullptr);
+<else>
     <name>(InputType* instream<recognizer.grammar.delegators:{g|, <g.recognizerName>* <g:delegateName()>}>);
     <name>(InputType* instream, RecognizerSharedStateType* state<recognizer.grammar.delegators:{g|, <g.recognizerName>* <g:delegateName()>}>);
+<endif>
+
     
     void init(InputType* instream <recognizer.grammar.delegators:{g|, <g.recognizerName>* <g:delegateName()>}> );
+    static ANTLR_UINT8** getTokenNames();
 
     <actions.(actionScope).context>
 
@@ -815,13 +831,20 @@ using namespace antlr3;
 /** \brief Table of all token names in symbolic order, mainly used for
  *         error reporting.
  */
-ANTLR_UINT8* <name>TokenNames[<length(tokenNames)>+4]
+ANTLR_UINT8* <name>TokenNames[]
      = {
         (ANTLR_UINT8*) "\<invalid>",       /* String to print to indicate an invalid token */
         (ANTLR_UINT8*) "\<EOR>",
         (ANTLR_UINT8*) "\<DOWN>",
         (ANTLR_UINT8*) "\<UP>",
         <tokenNames:{it |(ANTLR_UINT8*) <it>}; separator=",\n">
+<if(buildAST)>
+
+        // use to demarcate rule tokens from the rest
+        , (ANTLR_UINT8*) "\<rule_token_start>",
+        <rules:{r | (ANTLR_UINT8*) "<r.ruleDescriptor.name>_rule" }; separator=",\n">
+<endif>
+        
        };
 <endif>
 
@@ -845,7 +868,11 @@ const char* <name>::getGrammarFileName()
  *
  * \return Pointer to new parser context upon success.
  */
+ <if(buildAST)>
+<name>::<name>( StreamType* instream, TreeStoreType *treeStore<grammar.delegators:{g|, <g.recognizerName>* <g:delegateName()>}> )
+<else>
 <name>::<name>( StreamType* instream<grammar.delegators:{g|, <g.recognizerName>* <g:delegateName()>}>)
+<endif>
 <constructorInitializerType("NULL")>
 {
 	// See if we can create a new parser with the standard constructor
@@ -859,7 +886,11 @@ const char* <name>::getGrammarFileName()
  *
  * \return Pointer to new parser context upon success.
  */
-<name>::<name>( StreamType* instream, RecognizerSharedStateType* state<grammar.delegators:{g|, <g.recognizerName>* <g:delegateName()>}>)
+<if(buildAST)>
+<name>::<name>( StreamType* instream, RecognizerSharedStateType* state<grammar.delegators:{g|, <g.recognizerName>* <g:delegateName()>}>, TreeStoreType *treeStore )
+<else>
+<name>::<name>( StreamType* instream, RecognizerSharedStateType* state<grammar.delegators:{g|, <g.recognizerName>* <g:delegateName()>}> )
+<endif>
 <constructorInitializerType("state")>
 {
 	this->init(instream <grammar.delegators:{g|, <g:delegateName()>}>);
@@ -935,7 +966,7 @@ void
  *
  * \return Pointer to first char * in the table.
  */
-static ANTLR_UINT8**	getTokenNames()
+ANTLR_UINT8** <name>::getTokenNames()
 {
         return <grammar.composite.rootGrammar.recognizerName>TokenNames;
 }
@@ -994,6 +1025,11 @@ constructorInitializerType(rec_state) ::=<<
 <endif>
 <if(TREE_PARSER)>
     :ImplTraits::BaseTreeParserType(ANTLR_SIZE_HINT, instream, <rec_state>)
+<endif>
+
+<if(buildAST)>
+    // init tree adaptor
+    , _adaptor {treeStore}
 <endif>
 >>
 

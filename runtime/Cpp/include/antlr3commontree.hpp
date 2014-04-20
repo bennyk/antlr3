@@ -34,6 +34,7 @@
 // THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include    "antlr3defs.hpp"
+#include <memory>
 
 ANTLR_BEGIN_NAMESPACE()
 
@@ -48,6 +49,7 @@ public:
 	typedef CommonTree TokenType;
 	typedef typename AllocPolicyType::template VectorType<TreeType*> ChildrenType;
 	typedef typename AllocPolicyType::template ListType<TreeType*>	ChildListType;
+    typedef CommonTree BaseType;
 
 private:
 	/// The list of all the children that belong to this node. They are not part of the node
@@ -70,7 +72,7 @@ private:
 
     /// A single token, this is the payload for the tree
     ///
-    const CommonTokenType     *m_token;
+    std::unique_ptr<const CommonTokenType> m_token;
 
 	/// Points to the node that has this node as a child.
 	/// If this is NULL, then this is the root node.
@@ -85,17 +87,20 @@ private:
 public:
 	CommonTree();
 	CommonTree( const CommonTokenType* token );
+    CommonTree( ANTLR_UINT32 tokenType );
 	CommonTree( CommonTree* token );
 	CommonTree( const CommonTree& ctree );
-
+    
+    void set_token(const CommonTokenType * token );
 	const CommonTokenType*  get_token() const;
+    
 	ChildrenType& get_children();
 	const ChildrenType& get_children() const;
 	ChildrenType* get_children_p();
 	ANTLR_INT32	get_childIndex() const;
 	TreeType* get_parent() const;
 
-	void    set_parent( TreeType* parent);
+	void    set_parent( BaseType* parent);
 	void    set_childIndex( ANTLR_INT32 );
     
     void    set_startIndex(ANTLR_MARKER startIndex);

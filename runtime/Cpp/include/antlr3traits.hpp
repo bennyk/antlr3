@@ -56,6 +56,7 @@ public:
 	
 	typedef Empty TreeType;
 	typedef Empty TreeAdaptorType;
+    typedef Empty TreeStoreType;
 	
 	template<class StreamType>
 	class ExceptionBaseType : public Empty
@@ -239,6 +240,9 @@ public:
 										CommonTree<TraitsType> >::selected TreeType;
 	typedef typename TraitsSelector< typename UserTraits<TraitsType>::TreeAdaptorType, 
 										CommonTreeAdaptor<TraitsType> >::selected TreeAdaptorType;
+    typedef typename TraitsSelector< typename UserTraits<TraitsType>::TreeStoreType,
+                                        CommonTreeStore<TraitsType> >::selected TreeStoreType;
+
 		
 	template<class StreamType>
 	class ExceptionBaseType : public TraitsOneArgSelector< 
