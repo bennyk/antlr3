@@ -24,7 +24,7 @@ public:
 	typedef Empty InputStreamType;
 
 	template<class StreamType>
-	class IntStreamType : public Empty
+	class CharStreamType : public Empty
 	{
 	public:
 		typedef Empty BaseType;
@@ -159,11 +159,11 @@ public:
 		                              InputStream<TraitsType> >::selected InputStreamType;
 
 	template<class SuperType>
-	class IntStreamType 
+	class CharStreamType
 		: public TraitsOneArgSelector< 
-					typename UserTraits<TraitsType>::template IntStreamType<SuperType>, 
-		            IntStream<TraitsType, SuperType>,
-					typename UserTraits<TraitsType>::template IntStreamType<SuperType>::BaseType
+					typename UserTraits<TraitsType>::template CharStreamType<SuperType>,
+		            UTF8_CharStream<TraitsType, SuperType>,
+					typename UserTraits<TraitsType>::template CharStreamType<SuperType>::BaseType
 								>::selected  
 	{ };
 	
@@ -199,7 +199,7 @@ public:
 		                            CommonTreeNodeStream<TraitsType> >::selected TreeNodeStreamType;
     
     // TODO: HACK!!! to try out CommonTreeNodeStream
-    typedef IntStream<TraitsType, BaseTraitsType> TreeNodeIntStreamType;
+//    typedef IntStream<TraitsType, BaseTraitsType> TreeNodeIntStreamType;
 	
 	typedef typename TraitsSelector< typename UserTraits<TraitsType>::DebugEventListenerType, 
 		                            DebugEventListener<TraitsType> >::selected DebugEventListenerType;

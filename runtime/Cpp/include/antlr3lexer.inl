@@ -112,6 +112,7 @@ void Lexer<ImplTraits>::fillExceptionData( ExceptionBaseType* ex )
 	ex->set_c( m_input->_LA(1) );					/* Current input character			*/
 	ex->set_line( m_input->get_line() );						/* Line number comes from stream		*/
 	ex->set_charPositionInLine( m_input->get_charPositionInLine() );	    /* Line offset also comes from the stream   */
+    ex->set_charPosition( m_input->get_charPosition() );
 	ex->set_index( m_input->index() );
 	ex->set_streamName( m_input->get_fileName() );
 	ex->set_message( "Unexpected character" );
@@ -207,6 +208,7 @@ typename Lexer<ImplTraits>::CommonTokenType*	Lexer<ImplTraits>::emit()
     token->set_stopIndex( this->getCharIndex() - 1 );
     token->set_line( state->get_tokenStartLine() );
     token->set_charPositionInLine( state->get_tokenStartCharPositionInLine() );
+    token->set_charPosition( state->get_tokenStartCharPosition() );
 
 	token->set_tokText( state->get_text() );
     token->set_lineStart( this->get_input()->get_currentLine() );
@@ -358,6 +360,12 @@ template<class ImplTraits>
 ANTLR_MARKER	Lexer<ImplTraits>::getCharIndex()
 {
 	return this->get_istream()->index();
+}
+
+template<class ImplTraits>
+ANTLR_UINT32	Lexer<ImplTraits>::getCharPosition()
+{
+	return this->get_input()->get_charPosition();
 }
 
 template<class ImplTraits>

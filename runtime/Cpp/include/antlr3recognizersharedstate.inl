@@ -18,6 +18,7 @@ RecognizerSharedState<ImplTraits, StreamType>::RecognizerSharedState()
 	m_type = 0;
 	m_tokenStartLine = 0;
 	m_tokenStartCharPositionInLine = 0;
+    m_tokenStartCharPosition = 0;
 	m_tokenStartCharIndex = 0;
 }
 
@@ -114,6 +115,11 @@ template<class ImplTraits, class StreamType>
 ANTLR_INLINE ANTLR_INT32 RecognizerSharedState<ImplTraits, StreamType>::get_tokenStartLine() const
 {
 	return m_tokenStartLine;
+}
+template<class ImplTraits, class StreamType>
+ANTLR_INLINE ANTLR_INT32 RecognizerSharedState<ImplTraits, StreamType>::get_tokenStartCharPosition() const
+{
+	return m_tokenStartCharPosition;
 }
 template<class ImplTraits, class StreamType>
 ANTLR_INLINE ANTLR_INT32 RecognizerSharedState<ImplTraits, StreamType>::get_tokenStartCharPositionInLine() const
@@ -224,6 +230,11 @@ template<class ImplTraits, class StreamType>
 ANTLR_INLINE void RecognizerSharedState<ImplTraits, StreamType>::set_tokenStartLine( ANTLR_INT32 tokenStartLine )
 {
 	m_tokenStartLine = tokenStartLine;
+}
+template<class ImplTraits, class StreamType>
+ANTLR_INLINE void RecognizerSharedState<ImplTraits, StreamType>::set_tokenStartCharPosition( ANTLR_INT32 tokenStartCharPosition )
+{
+	m_tokenStartCharPosition= tokenStartCharPosition;
 }
 template<class ImplTraits, class StreamType>
 ANTLR_INLINE void RecognizerSharedState<ImplTraits, StreamType>::set_tokenStartCharPositionInLine( ANTLR_INT32 tokenStartCharPositionInLine )

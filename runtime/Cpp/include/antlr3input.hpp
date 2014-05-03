@@ -47,12 +47,12 @@ ANTLR_BEGIN_NAMESPACE()
 ///
 
 template<class ImplTraits>
-class	InputStream :   public ImplTraits::template IntStreamType< typename ImplTraits::InputStreamType >
+class	InputStream :   public ImplTraits::template CharStreamType< typename ImplTraits::InputStreamType >
 {
 public:
 	typedef typename ImplTraits::AllocPolicyType AllocPolicyType;
 	typedef typename ImplTraits::LexStateType LexStateType;
-	typedef typename ImplTraits::template IntStreamType< typename ImplTraits::InputStreamType > IntStreamType;
+	typedef typename ImplTraits::template CharStreamType< typename ImplTraits::InputStreamType > IntStreamType;
 	typedef IntStreamType BaseType;
 	typedef typename ImplTraits::StreamDataType UnitType;
 	typedef UnitType DataType;
@@ -92,7 +92,7 @@ private:
 
     /** The offset within the current line of the current character
      */
-    ANTLR_INT32		m_charPositionInLine;
+    ANTLR_INT32		m_charPositionInLine, m_charPosition;
 
     /** Tracks how deep mark() calls are nested
      */
@@ -145,6 +145,7 @@ public:
 	ANTLR_UINT32 get_line() const;
 	const DataType* get_currentLine() const;
 	ANTLR_INT32 get_charPositionInLine() const;
+    ANTLR_INT32 get_charPosition() const;
 	ANTLR_UINT32 get_markDepth() const;
 	MarkersType& get_markers();
 	const StringType& get_fileName() const;
@@ -159,6 +160,7 @@ public:
 	void  set_sizeBuf( ANTLR_UINT32 sizeBuf );
 	void  set_line( ANTLR_UINT32 line );
 	void  set_currentLine( const DataType* currentLine );
+    void  set_charPosition( ANTLR_INT32 charPosition );
 	void  set_charPositionInLine( ANTLR_INT32 charPositionInLine );
 	void  set_markDepth( ANTLR_UINT32 markDepth );
 	void  set_markers( const MarkersType& markers );
@@ -169,6 +171,7 @@ public:
 	void  set_encoding( ANTLR_UINT32 encoding );
 
 	void inc_charPositionInLine();
+    void inc_charPosition();
 	void inc_line();	
 	void inc_markDepth();
 
@@ -298,7 +301,7 @@ private:
 
     /** The offset within the current line of the current character
      */
-    ANTLR_INT32		m_charPositionInLine;
+    ANTLR_INT32		m_charPositionInLine, m_charPosition;
 
 public:
 	LexState();
@@ -306,10 +309,12 @@ public:
 	ANTLR_UINT32 get_line() const;
 	const DataType* get_currentLine() const;
 	ANTLR_INT32 get_charPositionInLine() const;
+    ANTLR_INT32 get_charPosition() const;
 	void  set_nextChar( const DataType* nextChar );
 	void  set_line( ANTLR_UINT32 line );
 	void  set_currentLine( const DataType* currentLine );
 	void  set_charPositionInLine( ANTLR_INT32 charPositionInLine );
+    void  set_charPosition( ANTLR_INT32 charIndex );
 };
 
 class ParseNullStringException : public std::exception

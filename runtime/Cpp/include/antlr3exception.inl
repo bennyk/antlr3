@@ -13,6 +13,7 @@ ANTLR_ExceptionBase<ImplTraits, StreamType>::ANTLR_ExceptionBase(const StringTyp
 	m_c = 0;
 	m_line = 0;
 	m_charPositionInLine = 0;
+    m_charPosition = 0;
 	m_decisionNum = 0;
 	m_state = 0;
 	m_nextException = NULL;
@@ -147,6 +148,11 @@ template<class ImplTraits, class StreamType>
 ANTLR_INLINE void ANTLR_ExceptionBase<ImplTraits, StreamType>::set_charPositionInLine( ANTLR_INT32 charPositionInLine )
 {
 	m_charPositionInLine = charPositionInLine;
+}
+template<class ImplTraits, class StreamType>
+ANTLR_INLINE void ANTLR_ExceptionBase<ImplTraits, StreamType>::set_charPosition( ANTLR_INT32 charPosition )
+{
+	m_charPosition = charPosition;
 }
 template<class ImplTraits, class StreamType>
 ANTLR_INLINE void ANTLR_ExceptionBase<ImplTraits, StreamType>::set_decisionNum( ANTLR_UINT32 decisionNum )

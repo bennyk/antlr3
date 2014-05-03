@@ -8,6 +8,7 @@ CommonToken<ImplTraits>::CommonToken()
 	m_lineStart = NULL;
 	m_line = 0;
 	m_charPositionInLine = 0;
+    m_charPosition = 0;
 	m_input = NULL;
 	m_index = 0;
 	m_startIndex = 0;
@@ -23,6 +24,7 @@ CommonToken<ImplTraits>::CommonToken(ANTLR_UINT32 type)
 	m_lineStart = NULL;
 	m_line = 0;
 	m_charPositionInLine = 0;
+    m_charPosition = 0;
 	m_input = NULL;
 	m_index = 0;
 	m_startIndex = 0;
@@ -38,6 +40,7 @@ CommonToken<ImplTraits>::CommonToken(TOKEN_TYPE type)
 	m_lineStart = NULL;
 	m_line = 0;
 	m_charPositionInLine = 0;
+    m_charPosition = 0;
 	m_input = NULL;
 	m_index = 0;
 	m_startIndex = 0;
@@ -54,6 +57,7 @@ CommonToken<ImplTraits>::CommonToken( const CommonToken& ctoken )
 	m_lineStart = ctoken.m_lineStart;
 	m_line = ctoken.m_line;
 	m_charPositionInLine = ctoken.m_charPositionInLine;
+    m_charPosition = ctoken.m_charPosition;
 	m_input = ctoken.m_input;
 	m_index = ctoken.m_index;
 	m_startIndex = ctoken.m_startIndex;
@@ -68,6 +72,7 @@ CommonToken<ImplTraits>& CommonToken<ImplTraits>::operator=( const CommonToken& 
 	m_lineStart = ctoken.m_lineStart;
 	m_line = ctoken.m_line;
 	m_charPositionInLine = ctoken.m_charPositionInLine;
+    m_charPosition = ctoken.m_charPosition;
 	m_input = ctoken.m_input;
 	m_index = ctoken.m_index;
 	m_startIndex = ctoken.m_startIndex;
@@ -91,6 +96,7 @@ bool CommonToken<ImplTraits>::operator==( const CommonToken& ctoken ) const
 			 (m_lineStart == ctoken.m_lineStart) &&
 			 (m_line == ctoken.m_line) &&
 			 (m_charPositionInLine == ctoken.m_charPositionInLine) &&
+             (m_charPosition == ctoken.m_charPosition) &&
 			 (m_input == ctoken.m_input) &&
 			 (m_index == ctoken.m_index) &&
 			 (m_startIndex == ctoken.m_startIndex) &&
@@ -216,6 +222,18 @@ template<class ImplTraits>
 ANTLR_INLINE void	CommonToken<ImplTraits>::set_charPositionInLine(ANTLR_INT32 pos)
 {
 	m_charPositionInLine = pos;
+}
+
+template<class ImplTraits>
+ANTLR_INLINE ANTLR_INT32  CommonToken<ImplTraits>::get_charPosition() const
+{
+	return m_charPosition;
+}
+
+template<class ImplTraits>
+ANTLR_INLINE void	CommonToken<ImplTraits>::set_charPosition(ANTLR_INT32 pos)
+{
+	m_charPosition = pos;
 }
 
 template<class ImplTraits>

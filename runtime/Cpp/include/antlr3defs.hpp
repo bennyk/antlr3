@@ -301,11 +301,14 @@ typedef ANTLR_UINT32		ANTLR_INTKEY;
  * they can be inter-dependant and we will let the linker
  * sort it out for us.
  */
+
+#ifdef __cplusplus
 #include    "antlr3interfaces.hpp"
 
 // Include the unicode.org conversion library header.
 //
 #include    "antlr3convertutf.hpp"
+#endif
 
 enum ChannelType
 {

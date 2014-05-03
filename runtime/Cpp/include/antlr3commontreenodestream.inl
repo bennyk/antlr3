@@ -1,6 +1,96 @@
 ANTLR_BEGIN_NAMESPACE()
 
 template<class ImplTraits>
+void  TreeNodeIntStream<ImplTraits>::consume()
+{
+	CommonTreeNodeStreamType* ctns = this->get_super();
+	if( ctns->get_p() == -1 )
+		ctns->fillBufferRoot();
+	ctns->inc_p();
+}
+template<class ImplTraits>
+ANTLR_MARKER		TreeNodeIntStream<ImplTraits>::tindex()
+{
+	CommonTreeNodeStreamType* ctns = this->get_super();
+	return (ANTLR_MARKER)(ctns->get_p());
+}
+
+template<class ImplTraits>
+ANTLR_UINT32		TreeNodeIntStream<ImplTraits>::_LA(ANTLR_INT32 i)
+{
+	CommonTreeNodeStreamType* tns	    = this->get_super();
+    
+	// Ask LT for the 'token' at that position
+	//
+	TreeType* t = tns->_LT(i);
+    
+	if	(t == NULL)
+	{
+		return	CommonTokenType::TOKEN_INVALID;
+	}
+    
+	// Token node was there so return the type of it
+	//
+	return  t->get_type();
+}
+
+template<class ImplTraits>
+ANTLR_MARKER	TreeNodeIntStream<ImplTraits>::mark()
+{
+	CommonTreeNodeStreamType* ctns	    = this->get_super();
+	
+	if	(ctns->get_p() == -1)
+	{
+		ctns->fillBufferRoot();
+	}
+    
+	// Return the current mark point
+	//
+	this->set_lastMarker( this->index() );
+    
+	return this->get_lastMarker();
+    
+}
+
+template<class ImplTraits>
+void  TreeNodeIntStream<ImplTraits>::release(ANTLR_MARKER marker)
+{
+    
+}
+
+template<class ImplTraits>
+void TreeNodeIntStream<ImplTraits>::rewindMark(ANTLR_MARKER marker)
+{
+	this->seek(marker);
+}
+
+template<class ImplTraits>
+void TreeNodeIntStream<ImplTraits>::rewindLast()
+{
+	this->seek( this->get_lastMarker() );
+}
+
+template<class ImplTraits>
+void	TreeNodeIntStream<ImplTraits>::seek(ANTLR_MARKER index)
+{
+	CommonTreeNodeStreamType* ctns	    = this->get_super();
+	ctns->set_p( ANTLR_UINT32_CAST(index) );
+}
+
+template<class ImplTraits>
+ANTLR_UINT32	TreeNodeIntStream<ImplTraits>::size()
+{
+	CommonTreeNodeStreamType* ctns	    = this->get_super();
+	
+	if	(ctns->get_p() == -1)
+	{
+		ctns->fillBufferRoot();
+	}
+    
+	return ctns->get_nodes().size();
+}
+
+template<class ImplTraits>
 CommonTreeNodeStream<ImplTraits>::CommonTreeNodeStream(ANTLR_UINT32 hint)
 {
 	this->init(hint);

@@ -48,6 +48,7 @@
 #include    "antlr3exception.hpp"
 #include    "antlr3filestream.hpp"
 #include    "antlr3intstream.hpp"
+#include    "antlr3charstream.hpp"
 #include    "antlr3input.hpp"
 #include    "antlr3tokenstream.hpp"
 #include	"antlr3commontreenodestream.hpp"

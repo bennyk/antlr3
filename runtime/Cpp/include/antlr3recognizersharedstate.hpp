@@ -184,7 +184,7 @@ private:
     /** The character position of the first character of the current token
      *  within the line specified by tokenStartLine
      */
-    ANTLR_INT32		m_tokenStartCharPositionInLine;
+    ANTLR_INT32		m_tokenStartCharPositionInLine, m_tokenStartCharPosition;
 
     /** What character index in the stream did the current token start at?
      *  Needed, for example, to get the text for current token.  Set at
@@ -224,6 +224,7 @@ public:
 	ANTLR_UINT32& get_channel();
 	ANTLR_UINT32 get_type() const;
 	ANTLR_INT32 get_tokenStartLine() const;
+    ANTLR_INT32 get_tokenStartCharPosition() const;
 	ANTLR_INT32 get_tokenStartCharPositionInLine() const;
 	ANTLR_MARKER get_tokenStartCharIndex() const;
 	StringType& get_text();
@@ -246,6 +247,7 @@ public:
 	void  set_type( ANTLR_UINT32 type );
 	void  set_token( const CommonTokenType* tok);
 	void  set_tokenStartLine( ANTLR_INT32 tokenStartLine );
+    void  set_tokenStartCharPosition( ANTLR_INT32 tokenStartCharPosition );
 	void  set_tokenStartCharPositionInLine( ANTLR_INT32 tokenStartCharPositionInLine );
 	void  set_tokenStartCharIndex( ANTLR_MARKER tokenStartCharIndex );
 	void  set_text( const StringType& text );

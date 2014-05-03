@@ -78,6 +78,7 @@ typename TokenSource<ImplTraits>::TokenType*	TokenSource<ImplTraits>::nextTokenS
             //
             state->set_channel( TOKEN_DEFAULT_CHANNEL );
             state->set_tokenStartCharIndex( (ANTLR_MARKER)input->get_nextChar() );
+            state->set_tokenStartCharPosition( input->get_charPosition() );
             state->set_tokenStartCharPositionInLine( input->get_charPositionInLine() );
             state->set_tokenStartLine( input->get_line() );
             state->set_text("");
@@ -160,6 +161,7 @@ typename TokenSource<ImplTraits>::CommonTokenType*	TokenSource<ImplTraits>::next
 	/* Record the start of the token in our input stream.
 		*/
 	state->set_tokenStartCharIndex( lexer->index() );
+    state->set_tokenStartCharPosition( lexer->getCharPosition() );
 	state->set_tokenStartCharPositionInLine( lexer->getCharPositionInLine() );
 	state->set_tokenStartLine( lexer->getLine() );
 	state->set_text("");
@@ -391,23 +393,20 @@ const typename TokenStream<ImplTraits>::TokenType*  TokenStream<ImplTraits>::_LT
 {
 	ANTLR_INT32    i;
 	ANTLR_INT32    n;
-	TokenStreamType* cts;
-
-	cts	    = this->get_super();
 
     if(k < 0)
 	{
-		return cts->LB(-k);
+		return this->LB(-k);
 	}
 
-	ANTLR_INT32 req_idx = cts->get_p() + k - 1;
+	ANTLR_INT32 req_idx = this->get_p() + k - 1;
 	ANTLR_INT32 cached_size = static_cast<ANTLR_INT32>(this->get_istream()->get_cachedSize());
 
-	if(	(cts->get_p() == -1) ||
+	if(	(this->get_p() == -1) ||
 		( ( req_idx >= cached_size ) && ( (cached_size % ImplTraits::TOKEN_FILL_BUFFER_INCREMENT) == 0 ) )
 	  )
 	{
-		cts->fillBuffer();
+		this->fillBuffer();
 	}
 
     // Here we used to check for k == 0 and return 0, but this seems
@@ -417,14 +416,14 @@ const typename TokenStream<ImplTraits>::TokenType*  TokenStream<ImplTraits>::_LT
 	cached_size = static_cast<ANTLR_INT32>(this->get_istream()->get_cachedSize());
 	if	( req_idx >= cached_size )
 	{
-		TokenType&    teof = cts->get_tokenSource()->get_eofToken();
+		TokenType&    teof = this->get_tokenSource()->get_eofToken();
 
 		teof.set_startIndex( this->get_istream()->index());
 		teof.set_stopIndex( this->get_istream()->index());
 		return  &teof;
 	}
 
-	i	= cts->get_p();
+	i	= this->get_p();
 	n	= 1;
 
 	/* Need to find k good tokens, skipping ones that are off channel
@@ -432,17 +431,17 @@ const typename TokenStream<ImplTraits>::TokenType*  TokenStream<ImplTraits>::_LT
 	while( n < k)
 	{
 		/* Skip off-channel tokens */
-		i = cts->skipOffTokenChannels(i+1); /* leave p on valid token    */
+		i = this->skipOffTokenChannels(i+1); /* leave p on valid token    */
 		n++;
 	}
 	
 	if( ( i >= cached_size ) && ( (cached_size % ImplTraits::TOKEN_FILL_BUFFER_INCREMENT) == 0 ) )
 	{
-		cts->fillBuffer();
+		this->fillBuffer();
 	}
 	if	( (ANTLR_UINT32) i >= this->get_istream()->get_cachedSize() )
 	{
-		TokenType&    teof = cts->get_tokenSource()->get_eofToken();
+		TokenType&    teof = this->get_tokenSource()->get_eofToken();
 
 		teof.set_startIndex(this->get_istream()->index());
 		teof.set_stopIndex(this->get_istream()->index());
@@ -453,7 +452,7 @@ const typename TokenStream<ImplTraits>::TokenType*  TokenStream<ImplTraits>::_LT
 	// function call penalty, we just return the pointer directly
 	// from the vector
 	//
-	return cts->getToken(i);
+	return this->getToken(i);
 }
 
 template<class ImplTraits>
@@ -550,11 +549,9 @@ void TokenStream<ImplTraits>::set_tokenSource( TokenSourceType* tokenSource )
 template<class ImplTraits>
 typename TokenStream<ImplTraits>::StringType	TokenStream<ImplTraits>::toString()
 {
-	TokenStreamType* cts = static_cast<TokenStreamType>(this);
-
-	if	(cts->get_p() == -1)
+	if	(this->get_p() == -1)
     {
-		cts->fillBuffer();
+		this->fillBuffer();
     }
 
     return  this->toStringSS(0, this->get_istream()->size());
@@ -567,13 +564,10 @@ TokenStream<ImplTraits>::toStringSS(ANTLR_MARKER start, ANTLR_MARKER stop)
     StringType string;
     TokenSourceType* tsource;
     const TokenType* tok;
-    TokenStreamType* cts;
 
-    cts = this->get_super();
-
-    if (cts->get_p() == -1)
+    if (this->get_p() == -1)
     {
-        cts->fillBuffer();
+        this->fillBuffer();
     }
     if (stop >= this->get_istream()->size())
     {
@@ -582,15 +576,15 @@ TokenStream<ImplTraits>::toStringSS(ANTLR_MARKER start, ANTLR_MARKER stop)
 
     /* Who is giving us these tokens?
      */
-    tsource = cts->get_tokenSource();
+    tsource = this->get_tokenSource();
 
-    if (tsource != NULL && !cts->get_tokens().empty() )
+    if (tsource != NULL && !this->get_tokens().empty() )
     {
         /* Finally, let's get a string
          */
         for (ANTLR_MARKER i = start; i <= stop; i++)
         {
-            tok = cts->get(i);
+            tok = this->get(i);
             if (tok != NULL)
             {
                 string.append( tok->getText() );
@@ -932,6 +926,153 @@ template<class ImplTraits>
 CommonTokenStream<ImplTraits>::~CommonTokenStream()
 {
 	m_tokens.clear();
+}
+
+template<class ImplTraits>
+TokenIntStream<ImplTraits>::TokenIntStream()
+{
+	m_cachedSize = 0;
+    m_lastMarker = 0;
+}
+
+template<class ImplTraits>
+ANTLR_UINT32 TokenIntStream<ImplTraits>::get_cachedSize() const
+{
+	return m_cachedSize;
+}
+
+template<class ImplTraits>
+void TokenIntStream<ImplTraits>::set_cachedSize( ANTLR_UINT32 cachedSize )
+{
+	m_cachedSize = cachedSize;
+}
+
+/** Move the input pointer to the next incoming token.  The stream
+ *  must become active with LT(1) available.  consume() simply
+ *  moves the input pointer so that LT(1) points at the next
+ *  input symbol. Consume at least one token.
+ *
+ *  Walk past any token not on the channel the parser is listening to.
+ */
+template<class ImplTraits>
+void TokenIntStream<ImplTraits>::consume()
+{
+//	TokenStreamType* cts = static_cast<TokenStreamType*>(this);
+    
+    if((ANTLR_UINT32)this->get_p() < m_cachedSize )
+	{
+		this->inc_p();
+		this->set_p( this->skipOffTokenChannels(this->get_p()) );
+	}
+}
+
+// TODO this function never get use??
+template<class ImplTraits>
+void  TokenIntStream<ImplTraits>::consumeInitialHiddenTokens()
+{
+	ANTLR_MARKER	first;
+	ANTLR_INT32	i;
+	TokenStreamType*	ts;
+    
+	ts	    = this->get_super();
+	first	= this->index();
+    
+	for	(i=0; i<first; i++)
+	{
+		ts->get_debugger()->consumeHiddenToken(ts->get(i));
+	}
+    
+	ts->set_initialStreamState(false);
+}
+
+
+template<class ImplTraits>
+ANTLR_UINT32	TokenIntStream<ImplTraits>::_LA( ANTLR_INT32 i )
+{
+	const CommonTokenType*    tok;
+    
+	tok	    =  this->_LT(i);
+    
+	if	(tok != NULL)
+	{
+		return	tok->get_type();
+	}
+	else
+	{
+		return	CommonTokenType::TOKEN_INVALID;
+	}
+    
+}
+
+template<class ImplTraits>
+ANTLR_MARKER	TokenIntStream<ImplTraits>::mark()
+{
+    m_lastMarker = this->index();
+    return  m_lastMarker;
+}
+
+template<class ImplTraits>
+ANTLR_UINT32 TokenIntStream<ImplTraits>::size()
+{
+    if (this->get_cachedSize() > 0)
+    {
+		return  this->get_cachedSize();
+    }
+    
+    this->set_cachedSize( static_cast<ANTLR_UINT32>(this->get_tokens().size()) );
+    return  this->get_cachedSize();
+}
+
+template<class ImplTraits>
+void	TokenIntStream<ImplTraits>::release()
+{
+    return;
+}
+
+template<class ImplTraits>
+ANTLR_MARKER   TokenIntStream<ImplTraits>::tindex()
+{
+	return this->get_p();
+}
+
+template<class ImplTraits>
+void	TokenIntStream<ImplTraits>::rewindLast()
+{
+    this->rewind( m_lastMarker );
+}
+
+template<class ImplTraits>
+void	TokenIntStream<ImplTraits>::rewind(ANTLR_MARKER marker)
+{
+	return this->seek(marker);
+}
+
+template<class ImplTraits>
+void	TokenIntStream<ImplTraits>::seek(ANTLR_MARKER index)
+{
+//    TokenStreamType* cts = static_cast<TokenStreamType*>(this);
+    
+    this->set_p( static_cast<ANTLR_INT32>(index) );
+}
+
+
+/// Return a string that represents the name assoicated with the input source
+///
+/// /param[in] is The ANTLR3_INT_STREAM interface that is representing this token stream.
+///
+/// /returns
+/// /implements ANTLR3_INT_STREAM_struct::getSourceName()
+///
+template<class ImplTraits>
+typename TokenIntStream<ImplTraits>::StringType
+TokenIntStream<ImplTraits>::getSourceName()
+{
+	// Slightly convoluted as we must trace back to the lexer's input source
+	// via the token source. The streamName that is here is not initialized
+	// because this is a token stream, not a file or string stream, which are the
+	// only things that have a context for a source name.
+	//
+	return this->get_tokenSource()->get_fileName();
 }
 
 ANTLR_END_NAMESPACE()

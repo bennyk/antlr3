@@ -36,8 +36,11 @@
 
 ANTLR_BEGIN_NAMESPACE()
 
-template<class ImplTraits, class SuperType>
+template<class ImplTraits>
 class IntStream;
+
+template<class ImplTraits, class SuperType>
+class CharStream;
 
 /// Pointer to an instantiation of 'class' #ANTLR3_RECOGNIZER_SHARED_STATE
 /// \ingroup ANTLR3_RECOGNIZER_SHARED_STATE

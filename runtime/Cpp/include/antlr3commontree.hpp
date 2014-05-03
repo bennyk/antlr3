@@ -123,6 +123,7 @@ public:
 	CommonTree*	dupNode() const;
 	TreeType*	dupTree();
 	ANTLR_UINT32	getCharPositionInLine();
+    ANTLR_UINT32	getCharPosition();
 	TreeType*	getChild(ANTLR_UINT32 i);
 	
 	ANTLR_UINT32	getChildCount() const;

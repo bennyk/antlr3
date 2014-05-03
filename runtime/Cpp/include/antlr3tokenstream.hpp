@@ -165,6 +165,12 @@ protected:
 public:
 	TokenStream(TokenSourceType* source, DebugEventListenerType* debugger);
 	IntStreamType* get_istream();
+    
+    /** Where is this stream pulling tokens from?  This is not the name, but
+     *  a pointer into an interface that contains a ANTLR3_TOKEN_SOURCE interface.
+     *  The Token Source interface contains a pointer to the input stream and a pointer
+     *  to a function that returns the next token.
+     */
 	TokenSourceType* get_tokenSource() const;
 	void set_tokenSource( TokenSourceType* tokenSource );
 
@@ -175,13 +181,6 @@ public:
      *  that is negative.
      */
     const TokenType*  _LT(ANTLR_INT32 k);
-
-    /** Where is this stream pulling tokens from?  This is not the name, but
-     *  a pointer into an interface that contains a ANTLR3_TOKEN_SOURCE interface.
-     *  The Token Source interface contains a pointer to the input stream and a pointer
-     *  to a function that returns the next token.
-     */
-    TokenSourceType*   getTokenSource();
 
     /** Function that installs a token source for teh stream
      */
@@ -243,10 +242,10 @@ public:
 	typedef typename ImplTraits::CommonTokenType TokenType;
 	typedef typename ImplTraits::TokenSourceType TokenSourceType;
 	typedef typename ImplTraits::DebugEventListenerType DebugEventListenerType;
-	typedef typename AllocPolicyType::template ListType<TokenType> TokensListType;
-	typedef typename AllocPolicyType::template OrderedMapType<ANTLR_MARKER, TokenType> TokensMapType;
-	typedef typename TokenStoreSelector< ImplTraits::TOKENS_ACCESSED_FROM_OWNING_RULE,
-	                                       TokensListType, TokensMapType >::TokensType TokensType;
+    
+    typedef typename TokenStream<ImplTraits>::TokensType TokensType;
+    typedef typename TokenStream<ImplTraits>::TokensListType TokensListType;
+    typedef typename TokenStream<ImplTraits>::TokensMapType TokensMapType;
 
 	typedef typename AllocPolicyType::template UnOrderedMapType<ANTLR_UINT32, ANTLR_UINT32> ChannelOverridesType;
 	typedef typename AllocPolicyType::template OrderedSetType<ANTLR_UINT32> DiscardSetType;
@@ -391,6 +390,10 @@ public:
 	ANTLR_UINT32 skipOffTokenChannels(ANTLR_INT32 i);
 	ANTLR_UINT32 skipOffTokenChannelsReverse(ANTLR_INT32 x);
 	ANTLR_MARKER index_impl();
+    
+    // abstract requirements
+    ANTLR_MARKER	    index() { return index_impl(); }
+    void	release(ANTLR_MARKER mark) {}
 };
 
 class TokenAccessException : public std::exception
@@ -399,6 +402,71 @@ class TokenAccessException : public std::exception
 	{
 		return " Attempted access on Deleted Token";
 	}
+};
+
+template<class ImplTraits>
+class TokenIntStream : public IntStream<ImplTraits>
+{
+public:
+    typedef typename ImplTraits::AllocPolicyType AllocPolicyType;
+    
+	typedef typename ImplTraits::CommonTokenType TokenType;
+    typedef TokenType CommonTokenType;
+	typedef typename ImplTraits::StringType StringType;
+	typedef typename ImplTraits::TokenStreamType TokenStreamType;
+	// typedef IntStream<ImplTraits, TokenStreamType > BaseType;
+    
+    typedef typename ImplTraits::TokenSourceType TokenSourceType;
+    typedef typename AllocPolicyType::template ListType<TokenType> TokensListType;
+	typedef typename AllocPolicyType::template OrderedMapType<ANTLR_MARKER, TokenType> TokensMapType;
+	typedef typename TokenStoreSelector< ImplTraits::TOKENS_ACCESSED_FROM_OWNING_RULE,
+                                            TokensListType, TokensMapType >::TokensType TokensType;
+    
+private:
+	/** Because the indirect call, though small in individual cases can
+     *  mount up if there are thousands of tokens (very large input streams), callers
+     *  of size can optionally use this cached size field.
+     */
+    ANTLR_UINT32	    m_cachedSize;
+    
+    /** Last marker position allocated
+     */
+    ANTLR_MARKER	m_lastMarker;
+    
+public:
+	TokenIntStream();
+	ANTLR_UINT32 get_cachedSize() const;
+	void set_cachedSize( ANTLR_UINT32 cachedSize );
+    
+	void consume();
+	void  consumeInitialHiddenTokens();
+	ANTLR_UINT32  _LA( ANTLR_INT32 i );
+	ANTLR_MARKER  mark();
+	ANTLR_UINT32  size();
+	void release();
+	ANTLR_MARKER  tindex();
+	void rewindLast();
+	void rewind(ANTLR_MARKER marker);
+	void seek(ANTLR_MARKER index);
+	StringType getSourceName();
+    
+    // abstract functions asserts in down stream derived classes
+    virtual const TokenType*  _LT(ANTLR_INT32 k) = 0;
+    virtual const TokenType* LB(ANTLR_INT32 k) = 0;
+
+    virtual TokensType&	get_tokens() = 0;
+    virtual const TokenType* getToken(ANTLR_MARKER i) = 0;
+    virtual const TokenType* get(ANTLR_MARKER i) = 0;
+    virtual TokenSourceType* get_tokenSource() const = 0;
+
+    virtual ANTLR_INT32 get_p() const = 0;
+    virtual void set_p( ANTLR_INT32 p ) = 0;
+    virtual void inc_p() = 0;
+	virtual void dec_p() = 0;
+
+	virtual void fillBuffer() = 0;
+	virtual ANTLR_UINT32 skipOffTokenChannels(ANTLR_INT32 i) = 0;
+    
 };
 
 ANTLR_END_NAMESPACE()

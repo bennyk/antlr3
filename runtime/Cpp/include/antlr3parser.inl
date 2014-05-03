@@ -55,6 +55,7 @@ void Parser<ImplTraits>::fillExceptionData( ExceptionBaseType* ex )
 	ex->set_token( m_tstream->_LT(1) );	    /* Current input token			    */
 	ex->set_line( ex->get_token()->get_line() );
 	ex->set_charPositionInLine( ex->get_token()->get_charPositionInLine() );
+    ex->set_charPosition( ex->get_token()->get_charPosition() );
 	ex->set_index( this->get_istream()->index() );
 	if( ex->get_token()->get_type() == CommonTokenType::TOKEN_EOF)
 	{
@@ -217,6 +218,7 @@ typename Parser<ImplTraits>::TokenType*	Parser<ImplTraits>::getMissingSymbol( In
 	//
 	token->set_line(current->get_line());
 	token->set_charPositionInLine( current->get_charPositionInLine());
+    token->set_charPosition( current->get_charPosition() );
 	token->set_channel( TOKEN_DEFAULT_CHANNEL );
 	token->set_type(expectedTokenType);
     token->set_lineStart( current->get_lineStart() );

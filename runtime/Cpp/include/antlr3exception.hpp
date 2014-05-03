@@ -119,7 +119,7 @@ protected:
 
     /** Character position in the line where the error occurred.
      */
-    ANTLR_INT32   	m_charPositionInLine;
+    ANTLR_INT32   	m_charPositionInLine, m_charPosition;
 
     /** decision number for NVE
      */
@@ -164,6 +164,7 @@ public:
 	void  set_c( ANTLR_UCHAR c );
 	void  set_line( ANTLR_UINT32 line );
 	void  set_charPositionInLine( ANTLR_INT32 charPositionInLine );
+    void  set_charPosition( ANTLR_INT32 charPosition );
 	void  set_decisionNum( ANTLR_UINT32 decisionNum );
 	void  set_state( ANTLR_UINT32 state );
 	void  set_ruleName( const StringType& ruleName );

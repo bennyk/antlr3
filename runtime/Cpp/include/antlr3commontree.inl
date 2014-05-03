@@ -359,6 +359,25 @@ ANTLR_UINT32	CommonTree<ImplTraits>::getCharPositionInLine()
 }
 
 template<class ImplTraits>
+ANTLR_UINT32	CommonTree<ImplTraits>::getCharPosition()
+{
+	if	(m_token.get() == nullptr || (m_token->get_charPosition() == -1) )
+	{
+		if  (this->getChildCount() > 0)
+		{
+			TreeType*	child;
+            
+			child   = this->getChild(0);
+            
+			return child->getCharPosition();
+		}
+		return 0;
+	}
+	return  m_token->get_charPosition();
+}
+
+
+template<class ImplTraits>
 typename CommonTree<ImplTraits>::TreeType*	CommonTree<ImplTraits>::getChild(ANTLR_UINT32 i)
 {
 	if	(  m_children.empty()

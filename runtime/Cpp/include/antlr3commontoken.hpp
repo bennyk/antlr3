@@ -108,7 +108,7 @@ private:
 
     /** The character position in the line that this token was derived from
      */
-    ANTLR_INT32		m_charPositionInLine;
+    ANTLR_INT32		m_charPositionInLine, m_charPosition;
 
     /** Pointer to the input stream that this token originated in.
      */
@@ -192,10 +192,12 @@ public:
      */ 
     ANTLR_INT32  get_charPositionInLine() const;
 	ANTLR_INT32  getCharPositionInLine() const;
+    ANTLR_INT32  get_charPosition() const;
 
     /** Pointer to a function that sets the offset in the line where this token exists
      */
     void	set_charPositionInLine(ANTLR_INT32 pos);
+    void	set_charPosition(ANTLR_INT32 pos);
 
     /** Pointer to a function that gets the channel that this token was placed in (parsers
      *  can 'tune' to these channels.

@@ -220,6 +220,7 @@ public:
      */
     ANTLR_UINT32	getLine();
     ANTLR_MARKER	getCharIndex();
+    ANTLR_UINT32	getCharPosition();
     ANTLR_UINT32	getCharPositionInLine();
 
     /** Function to return the text so far for the current token being generated

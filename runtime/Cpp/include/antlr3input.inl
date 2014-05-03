@@ -155,6 +155,11 @@ ANTLR_INLINE ANTLR_INT32 InputStream<ImplTraits>::get_charPositionInLine() const
 	return m_charPositionInLine;
 }
 template<class ImplTraits>
+ANTLR_INLINE ANTLR_INT32 InputStream<ImplTraits>::get_charPosition() const
+{
+	return m_charPosition;
+}
+template<class ImplTraits>
 ANTLR_INLINE ANTLR_UINT32 InputStream<ImplTraits>::get_markDepth() const
 {
 	return m_markDepth;
@@ -220,6 +225,11 @@ ANTLR_INLINE void InputStream<ImplTraits>::set_currentLine( const DataType* curr
 	m_currentLine = currentLine;
 }
 template<class ImplTraits>
+ANTLR_INLINE void InputStream<ImplTraits>::set_charPosition( ANTLR_INT32 charPosition )
+{
+	m_charPosition = charPosition;
+}
+template<class ImplTraits>
 ANTLR_INLINE void InputStream<ImplTraits>::set_charPositionInLine( ANTLR_INT32 charPositionInLine )
 {
 	m_charPositionInLine = charPositionInLine;
@@ -267,6 +277,12 @@ ANTLR_INLINE void InputStream<ImplTraits>::inc_charPositionInLine()
 }
 
 template<class ImplTraits>
+ANTLR_INLINE void InputStream<ImplTraits>::inc_charPosition()
+{
+	++m_charPosition;
+}
+
+template<class ImplTraits>
 ANTLR_INLINE void InputStream<ImplTraits>::inc_line()
 {
 	++m_line;
@@ -284,6 +300,7 @@ ANTLR_INLINE void	InputStream<ImplTraits>::reset()
 	m_nextChar		= m_data;	/* Input at first character */
     m_line			= 1;		/* starts at line 1	    */
     m_charPositionInLine	= 0;
+    m_charPosition = 0;
     m_currentLine		= m_data;
     m_markDepth		= 0;		/* Reset markers	    */
     
@@ -381,6 +398,7 @@ ANTLR_INLINE LexState<ImplTraits>::LexState()
 	m_line = 0;
 	m_currentLine = NULL;
 	m_charPositionInLine = 0;
+    m_charPosition = 0;
 }
 
 template<class ImplTraits>
@@ -408,6 +426,12 @@ ANTLR_INLINE ANTLR_INT32 LexState<ImplTraits>::get_charPositionInLine() const
 }
 
 template<class ImplTraits>
+ANTLR_INLINE ANTLR_INT32 LexState<ImplTraits>::get_charPosition() const
+{
+	return m_charPosition;
+}
+
+template<class ImplTraits>
 ANTLR_INLINE void LexState<ImplTraits>::set_nextChar( const DataType* nextChar )
 {
 	m_nextChar = nextChar;
@@ -429,6 +453,12 @@ template<class ImplTraits>
 ANTLR_INLINE void LexState<ImplTraits>::set_charPositionInLine( ANTLR_INT32 charPositionInLine )
 {
 	m_charPositionInLine = charPositionInLine;
+}
+
+template<class ImplTraits>
+ANTLR_INLINE void LexState<ImplTraits>::set_charPosition( ANTLR_INT32 charPosition )
+{
+	m_charPosition = charPosition;
 }
 
 template<class ImplTraits>

@@ -877,6 +877,7 @@ void  BaseRecognizer<ImplTraits, StreamType>::reset( ClassForwarder<LexerType> )
     m_state->set_channel( TOKEN_DEFAULT_CHANNEL );
     m_state->set_tokenStartCharIndex( -1 );
     m_state->set_tokenStartCharPositionInLine(-1);
+    m_state->set_tokenStartCharPosition( -1 );
     m_state->set_tokenStartLine( -1 );
     m_state->set_text("");
 }

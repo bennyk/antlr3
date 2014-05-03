@@ -38,6 +38,27 @@
 ANTLR_BEGIN_NAMESPACE()
 
 template<class ImplTraits>
+class TreeNodeIntStream : public IntStream<ImplTraits> //, typename ImplTraits::CommonTreeNodeStreamType>
+{
+public:
+	typedef typename ImplTraits::CommonTreeNodeStreamType CommonTreeNodeStreamType;
+	// typedef IntStream<ImplTraits, CommonTreeNodeStreamType > BaseType;
+	typedef typename ImplTraits::TreeType TreeType;
+	typedef typename ImplTraits::CommonTokenType CommonTokenType;
+    
+public:
+	void				consume();
+	ANTLR_MARKER		tindex();
+	ANTLR_UINT32		_LA(ANTLR_INT32 i);
+	ANTLR_MARKER		mark();
+	void				release(ANTLR_MARKER marker);
+	void				rewindMark(ANTLR_MARKER marker);
+	void				rewindLast();
+	void				seek(ANTLR_MARKER index);
+	ANTLR_UINT32		size();
+};
+
+template<class ImplTraits>
 class CommonTreeNodeStream : public ImplTraits::TreeNodeIntStreamType
 {
 public:
